@@ -2,6 +2,8 @@ from requests import get, post
 import json
 from dateutil import parser
 import datetime
+import os
+import re
 
 # Module variables to connect to moodle api:
 # Insert token and URL for your site here.
@@ -84,6 +86,8 @@ sec = LocalGetSections(courseid)
 # Output readable JSON, but print only summary
 #rkprint(json.dumps(sec.getsections[1]['summary'], indent=4, sort_keys=True))
 
+
+
 # Split the section name by dash and convert the date into the timestamp, it takes the current year, so think of a way for making sure it has the correct year!
 month = parser.parse(list(sec.getsections)[1]['name'].split('-')[0])
 # Show the resulting timestamp
@@ -95,32 +99,32 @@ month = parser.parse(list(sec.getsections)[1]['name'].split('-')[0])
 data = [{'type': 'num', 'section': 0, 'summary': '', 'summaryformat': 1, 'visible': 1 , 'highlight': 0, 'sectionformatoptions': [{'name': 'level', 'value': '1'}]}]
 
 # Assemble the correct summary
-summary = '<a href="https://mikhail-cct.github.io/ca3-test/wk1/">Week 1: Introduction</a><br>'
+#summary = '<a href="https://mikhail-cct.github.io/ca3-test/wk1/">Week 1: Introduction</a><br>'
 
 # Assign the correct summary
-data[0]['summary'] = summary
+#data[0]['summary'] = summary
 
 # Set the correct section number
-data[0]['section'] = 1
+#data[0]['section'] = 1
 
 # Write the data back to Moodle
-sec_write = LocalUpdateSections(courseid, data)
+#sec_write = LocalUpdateSections(courseid, data)
 
-sec = LocalGetSections(courseid)
+#sec = LocalGetSections(courseid)
 #rkprint(json.dumps(sec.getsections[1]['summary'], indent=4, sort_keys=True))
 
+
+
+#Create a list of dictionaries for folders in repsitory
 list_of_dicts = []
 dictionary = {}
 count = 0
-
-import os
-import re
 
 for folder , sub_folders , files in os.walk("/workspace/MoodleAutomation"):
     if "wk" in folder:
         info = re.search(r'\d+\w*', folder)
         list_of_dicts.append(dictionary.copy())
-        list_of_dicts[count]["week number"] = info.group()
+        list_of_dicts[count]["week_number"] = info.group()
         for sub_fold in sub_folders:
             break
         for f in files:
@@ -131,29 +135,17 @@ for folder , sub_folders , files in os.walk("/workspace/MoodleAutomation"):
             if f.endswith(".pdf"):
                 list_of_dicts[count]["pdf"] = f
         count += 1
-    
-    
-
-    
-    #if "wk" in folder:
-     #   week_data_dictionary["{folder}"] = "wk{folder}"
+#print(list_of_dicts)
 
 
-    #rkprint("Currently looking at folder: "+ folder)
-    #rkprint('\n')
-    #rkprint("THE SUBFOLDERS ARE: ")
-    #rkfor sub_fold in sub_folders:
-        #rkprint("\t Subfolder: "+sub_fold )
-
-    #rkprint('\n')
-
-    #rkprint("THE FILES ARE: ")
-    #rkfor f in files:
-        #rkprint("\t File: "+f)
-    #rkprint('\n')
-
-    # Now look at subfolders
+# Update html links on Moodle
+for d in list_of_dicts:
+    summary = '<a href="https://mikhail-cct.github.io/ca3-test/wk{}/">Week{}</a><br>'.format(d["week_number"], d["week_number"])
+    data[0]['summary'] = summary
+    data[0]['section'] = d["week_number"]
+    sec_write = LocalUpdateSections(courseid, data)
 
 
-    #print(week_data_dictionary)
-print(list_of_dicts)
+for counter in range(1,13):
+    print(json.dumps(sec.getsections[counter]["sectionnum"], indent=4, sort_keys=True))
+    print(json.dumps(sec.getsections[counter]["summary"], indent=4, sort_keys=True))
