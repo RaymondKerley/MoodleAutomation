@@ -1,37 +1,133 @@
-## Welcome to GitHub Pages
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-You can use the [editor on GitHub](https://github.com/RaymondKerley/MoodleAutomation/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+		<title>SBIT – WK1</title>
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.8.0/css/reset.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.8.0/css/reveal.css">
+		<link rel="stylesheet" href="../custom.css">
 
-### Markdown
+		<!-- Theme used for syntax highlighting of code -->
+		<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.8.0/lib/css/monokai.css"> -->
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.8.0/css/print/pdf.css' : 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.8.0/css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section data-markdown="slides.md"
+					       data-separator="^---"
+					       data-separator-vertical="^--"
+					       data-separator-notes="^Note:"
+					       data-charset="utf-8">
+				<div class="grid-wrapper">	
+				</div>				   
+			       </section>
+			</div>
+		</div>
+		<div id="rise-overlay"><div class="line top"></div><div class="line bottom"></div><div class="line left"></div><div class="line right"></div><div class="logo"><img src="../logo.png"></div></div>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.8.0/js/reveal.js"></script>
 
-```markdown
-Syntax highlighted code block
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			Reveal.initialize({
+	     	   		controls: true,
+		        	controlsTutorial: true,
+			        controlsLayout: 'bottom-right',
+			        controlsBackArrows: 'faded',
+			        progress: true,
+			        slideNumber: false,
+			        history: true,
+			        keyboard: true,
+			        overview: true,
+			        center: true,
+			        touch: true,
+			        loop: false,
+			        rtl: false,
+			        shuffle: false,
+			        fragments: true,
+			        fragmentInURL: false,
+			        embedded: false,
+			        help: true,
+			        showNotes: false,
+			        autoPlayMedia: false,
+			        autoSlide: 0,
+			        autoSlideStoppable: true,
+			        autoSlideMethod: Reveal.navigateNext,
+			        defaultTiming: 120,
+			        mouseWheel: false,
+			        hideAddressBar: true,
+			        previewLinks: false,
+			        transition: 'default',
+			        transitionSpeed: 'default',
+			        backgroundTransition: 'default',
+			        viewDistance: 3,
+			        parallaxBackgroundImage: '',
+			        parallaxBackgroundSize: '',
+			        parallaxBackgroundHorizontal: 0,
+			        parallaxBackgroundVertical: 0,
+			        display: 'block',
+				hash: true,
+				multiplex: {
+					// Example values. To generate your own, see the socket.io server instructions.
+					secret: null, // Obtained from the socket.io server. Gives this (the master) control of the presentation
+					id: 'f3ecca4702ce5457', // Obtained from socket.io server
+					url: 'https://reveal-js-multiplex-ccjbegmaii.now.sh' // Location of socket.io server
+				},
+				dependencies: [
+					{ src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.8.0/plugin/markdown/marked.js' },
+					{ src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.8.0/plugin/markdown/markdown.js' },
+					{ src: 'https://cdn.jsdelivr.net/npm/reveal.js-chalkboard@1.0.0/chalkboard.js' },
+					{ src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.8.0/plugin/highlight/highlight.js',  async: true },
+					{ src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.8.0/plugin/notes/notes.js', async: true },
+					{ src: 'https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js', async: true },
+					{ src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.8.0/plugin/multiplex/client.js', async: true },
+					{ src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.8.0/plugin/zoom-js/zoom.js', async: true }
+				],
+				keyboard: {
+				    67: function() { RevealChalkboard.toggleNotesCanvas() },	// toggle notes canvas when 'c' is pressed
+				    66: function() { RevealChalkboard.toggleChalkboard() },	// toggle chalkboard when 'b' is pressed
+				    46: function() { RevealChalkboard.clear() },	// clear chalkboard when 'DEL' is pressed
+				     8: function() { RevealChalkboard.reset() },	// reset chalkboard data on current slide when 'BACKSPACE' is pressed
+				    68: function() { RevealChalkboard.download() },	// downlad recorded chalkboard drawing when 'd' is pressed
+				    88: function() { RevealChalkboard.colorNext() },	// cycle colors forward when 'x' is pressed
+				    89: function() { RevealChalkboard.colorPrev() },	// cycle colors backward when 'y' is pressed
+				}
+			});
+			
+			// Shows the slide number using default formatting
+			Reveal.configure({ slideNumber: true });
 
-# Header 1
-## Header 2
-### Header 3
+			// Slide number formatting can be configured using these variables:
+			//  "h.v": 	horizontal . vertical slide number (default)
+			//  "h/v": 	horizontal / vertical slide number
+			//    "c": 	flattened slide number
+			//  "c/t": 	flattened slide number / total slides
+			Reveal.configure({ slideNumber: 'c/t' });
 
-- Bulleted
-- List
+			// You can provide a function to fully customize the number:
+			Reveal.configure({ slideNumber: function( slide ) {
+			    // Ignore numbering of vertical slides
+			    return [ Reveal.getIndices( slide ).h+1 ];
+			}});
 
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/RaymondKerley/MoodleAutomation/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+			// Control which views the slide number displays on using the "showSlideNumber" value:
+			//     "all": show on all views (default)
+			// "speaker": only show slide numbers on speaker notes view
+			//   "print": only show slide numbers when printing to PDF
+			Reveal.configure({ showSlideNumber: 'all' });
+		</script>
+	</body>
+</html>
