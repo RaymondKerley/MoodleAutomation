@@ -140,7 +140,7 @@ for folder , sub_folders , files in os.walk("/workspace/MoodleAutomation"):
 
 # Update html links on Moodle
 for d in list_of_dicts:
-    summary = '<a href="https://mikhail-cct.github.io/ca3-test/wk{}/">Week{}</a><br>'.format(d["week_number"], d["week_number"])
+    summary = '<a href="https://mikhail-cct.github.io/ca3-test/wk{}/">Week{} Slides</a><br><a href="https://mikhail-cct.github.io/ca3-test/wk{}.pdf/">Week{} PDF</a><br>'.format(d["week_number"], d["week_number"], d["week_number"], d["week_number"])
     data[0]['summary'] = summary
     data[0]['section'] = d["week_number"]
     sec_write = LocalUpdateSections(courseid, data)
