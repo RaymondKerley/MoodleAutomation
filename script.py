@@ -16,7 +16,7 @@ ENDPOINT = "/webservice/rest/server.php"
 
 
 def rest_api_parameters(in_args, prefix='', out_dict=None):
-    """Transform dictionary/array structure to a flat dictionary, with key names
+    """Transform blank_dictionary_1/array structure to a flat blank_dictionary_1, with key names
     defining the structure.
     Example usage:
     >>> rest_api_parameters({'courses':[{'id':1,'name': 'course1'}]})
@@ -76,17 +76,20 @@ class LocalUpdateSections(object):
         self.updatesections = call(
             'local_wsmanagesections_update_sections', courseid=cid, sections=sectionsdata)
 
-################################################
-# Example
-################################################
 
 
-courseid = "2"  # Exchange with valid id.
+
+
+
+
+
+
+# Set our Course ID
+courseid = "2"  
+
 # Get all sections of the course.
 sec = LocalGetSections(courseid)
 
-# Output readable JSON, but print only summary
-#rkprint(json.dumps(sec.getsections[1]['summary'], indent=4, sort_keys=True))
 
 
 
@@ -100,90 +103,72 @@ month = parser.parse(list(sec.getsections)[1]['name'].split('-')[0])
 #  Assemble the payload
 data = [{'type': 'num', 'section': 0, 'summary': '', 'summaryformat': 1, 'visible': 1 , 'highlight': 0, 'sectionformatoptions': [{'name': 'level', 'value': '1'}]}]
 
-# Assemble the correct summary
-#summary = '<a href="https://mikhail-cct.github.io/ca3-test/wk1/">Week 1: Introduction</a><br>'
-
-# Assign the correct summary
-#data[0]['summary'] = summary
-
-# Set the correct section number
-#data[0]['section'] = 1
-
-# Write the data back to Moodle
-#sec_write = LocalUpdateSections(courseid, data)
-
-#sec = LocalGetSections(courseid)
-#rkprint(json.dumps(sec.getsections[1]['summary'], indent=4, sort_keys=True))
 
 
+#############################################################
+### Create a list of dictionaries for folders in repository
+#############################################################
 
-#Create a list of dictionaries for folders in repsitory
-list_of_dicts = []
-dictionary = {}
-count = 0
+list_of_folder_dictionaries = [] #Create an empty list to add our folder dictionaries to
+counter_1 = 0 #Create counter for the indices of our list
 
-for folder , sub_folders , files in os.walk("/workspace/MoodleAutomation"):
+for folder, sub_folders, files in os.walk(os.getcwd()):   #Walk through folders and files in the current directory ("/workspace/MoodleAutomation")
     if "wk" in folder:
-        info = re.search(r'\d+\w*', folder)
-        list_of_dicts.append(dictionary.copy())
-        list_of_dicts[count]["week_number"] = info.group()
+        info = re.search(r'\d+\w*', folder) #Search each folder for the wk number
+        list_of_folder_dictionaries.append({}) #If we find a new wk number, add a blank dictionary to the list 
+        list_of_folder_dictionaries[counter_1]["week_number"] = info.group() #Assign the value to the "week number" key in the dictionary
         for sub_fold in sub_folders:
-            break
+            break #We will not have subfolders
         for f in files:
-            if f.endswith(".html"):
-                list_of_dicts[count]["index"] = f
+            if f.endswith(".html"): 
+                list_of_folder_dictionaries[counter_1]["index"] = f #If the file is a .html, assign that value to the "index" key in the dictionary
             if f.endswith(".md"):
-                list_of_dicts[count]["slides"] = f
+                list_of_folder_dictionaries[counter_1]["slides"] = f #If the file is a .md, assign that value to the "slides" key in the dictionary
             if f.endswith(".pdf"):
-                list_of_dicts[count]["pdf"] = f
-        count += 1
-#print(list_of_dicts)
+                list_of_folder_dictionaries[counter_1]["pdf"] = f #If the file is a .pdf, assign that value to the "pdf" key in the dictionary
+        counter_1 += 1 #Increase the counter by 1 to track the indices of our list
+
+#print(list_of_folder_dictionaries)
 
 
-# Update html links on Moodle
-for d in list_of_dicts:
+
+#############################################################
+### Create list of dictionaries with hash and date of videos
+#############################################################
+
+list_of_video_dictionaries = [] #Create an empty list to add our video dictionaries to
+counter_2 = 0 #Create counter for the indices of our list
+
+base_url = "https://drive.google.com/drive/folders/1pFHUrmpLv9gEJsvJYKxMdISuQuQsd_qX" #Address of the website hosting our videos
+res = requests.get(base_url) #Grab html data from the webpage
+soup = bs4.BeautifulSoup(res.text, "lxml") #Make the result readable using BeautifulSoup
+videos = soup.find_all('div',class_ = 'Q5txwe') #Find all data for class = 'Q5txwe' only
+
+for video in videos: #iterate through data from each video found in the class = 'Q5txwe
+    list_of_video_dictionaries.append({}) #Add a new dictionary to the list each time we find a new video
+    video_id = video.parent.parent.parent.parent.attrs['data-id'] #Get the hash for each video
+    list_of_video_dictionaries[counter_2]["hash"] = video_id #Assign the hash to the "hash" key in the dictionary
+    date = re.search(r'\d{4}-\d{2}-\d{2}', str(video)) #Get the date of each video
+    list_of_video_dictionaries[counter_2]["date"] = date.group() #Assign the date to the "date" key in the dictionary
+    counter_2 += 1 #Increase the counter by 1 to track the indices of our list
+
+#print(list_of_video_dictionaries)
+
+
+################################
+### Update html links on Moodle
+################################
+
+for d in list_of_folder_dictionaries: 
     summary = '<a href="https://mikhail-cct.github.io/ca3-test/wk{}/">Week{} Slides</a><br><a href="https://mikhail-cct.github.io/ca3-test/wk{}.pdf/">Week{} PDF</a><br>'.format(d["week_number"], d["week_number"], d["week_number"], d["week_number"])
     data[0]['summary'] = summary
     data[0]['section'] = d["week_number"]
     sec_write = LocalUpdateSections(courseid, data)
 
 
-#for counter in range(1,13):
-    #print(json.dumps(sec.getsections[counter]["sectionnum"], indent=4, sort_keys=True))
-    #print(json.dumps(sec.getsections[counter]["summary"], indent=4, sort_keys=True))
-
-
-
-#Create list of dictionaries with hash and date of videos
-video_dict = []
-dictionary_2 = {}
-counter_1 = 0
-counter_2 = 0
-
-
-base_url = "https://drive.google.com/drive/folders/1pFHUrmpLv9gEJsvJYKxMdISuQuQsd_qX"
-res = requests.get(base_url)
-soup = bs4.BeautifulSoup(res.text, "lxml")
-videos = soup.find_all('div',class_ = 'Q5txwe')
-
-
-#Get hash for videos
-for video in videos:
-    video_dict.append(dictionary_2.copy())
-    video_id = video.parent.parent.parent.parent.attrs['data-id']
-    video_dict[counter_1]["hash"] = video_id
-    counter_1 += 1
-
-
-#Get date of videos
-for vid in videos:
-    date = re.search(r'\d{4}-\d{2}-\d{2}', str(vid))  
-    video_dict[counter_2]["date"] = date.group()
-    counter_2 += 1
-
-print(video_dict)
-
-
+#for counter_1er in range(1,13):
+    #print(json.dumps(sec.getsections[counter_1er]["sectionnum"], indent=4, sort_keys=True))
+    #print(json.dumps(sec.getsections[counter_1er]["summary"], indent=4, sort_keys=True))
 
 
     
