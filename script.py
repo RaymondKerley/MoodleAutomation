@@ -4,6 +4,8 @@ from dateutil import parser
 import datetime
 import os
 import re
+import bs4
+import requests
 
 # Module variables to connect to moodle api:
 # Insert token and URL for your site here.
@@ -146,6 +148,19 @@ for d in list_of_dicts:
     sec_write = LocalUpdateSections(courseid, data)
 
 
-for counter in range(1,13):
-    print(json.dumps(sec.getsections[counter]["sectionnum"], indent=4, sort_keys=True))
-    print(json.dumps(sec.getsections[counter]["summary"], indent=4, sort_keys=True))
+#for counter in range(1,13):
+    #print(json.dumps(sec.getsections[counter]["sectionnum"], indent=4, sort_keys=True))
+    #print(json.dumps(sec.getsections[counter]["summary"], indent=4, sort_keys=True))
+
+
+
+
+base_url = "https://drive.google.com/drive/folders/1pFHUrmpLv9gEJsvJYKxMdISuQuQsd_qX"
+res = requests.get(base_url)
+
+soup = bs4.BeautifulSoup(res.text, "lxml")
+videos = soup.find_all('div',class_ = 'Q5txwe')
+
+for video in videos:
+    video_id = video.parent.parent.parent.parent.attrs['data-id']
+    print(video_id)
