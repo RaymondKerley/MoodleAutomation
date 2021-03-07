@@ -154,13 +154,38 @@ for d in list_of_dicts:
 
 
 
+#Create list of dictionaries with hash and date of videos
+video_dict = []
+dictionary_2 = {}
+counter_1 = 0
+counter_2 = 0
+
 
 base_url = "https://drive.google.com/drive/folders/1pFHUrmpLv9gEJsvJYKxMdISuQuQsd_qX"
 res = requests.get(base_url)
-
 soup = bs4.BeautifulSoup(res.text, "lxml")
 videos = soup.find_all('div',class_ = 'Q5txwe')
 
+
+#Get hash for videos
 for video in videos:
+    video_dict.append(dictionary_2.copy())
     video_id = video.parent.parent.parent.parent.attrs['data-id']
-    print(video_id)
+    video_dict[counter_1]["hash"] = video_id
+    counter_1 += 1
+
+
+#Get date of videos
+for vid in videos:
+    date = re.search(r'\d{4}-\d{2}-\d{2}', str(vid))  
+    video_dict[counter_2]["date"] = date.group()
+    counter_2 += 1
+
+print(video_dict)
+
+
+
+
+    
+
+#https://drive.google.com/file/d/
