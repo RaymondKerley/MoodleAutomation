@@ -6,6 +6,15 @@ import os
 import re
 import bs4
 import requests
+from dateutil.relativedelta import relativedelta
+
+
+
+
+
+
+
+
 
 # Module variables to connect to moodle api:
 # Insert token and URL for your site here.
@@ -13,6 +22,7 @@ import requests
 KEY = "8cc87cf406775101c2df87b07b3a170d"
 URL = "https://034f8a1dcb5c.eu.ngrok.io"
 ENDPOINT = "/webservice/rest/server.php"
+
 
 
 def rest_api_parameters(in_args, prefix='', out_dict=None):
@@ -56,6 +66,7 @@ def call(fname, **kwargs):
         raise SystemError("Error calling Moodle API\n", response)
     return response
 
+
 ################################################
 # Rest-Api classes
 ################################################
@@ -79,29 +90,18 @@ class LocalUpdateSections(object):
 
 
 
+############################################################
+
+courseid = "2"  # Set our Course ID
+sec = LocalGetSections(courseid) # Get all sections of the course.
+data = [{'type': 'num', 'section': 0, 'summary': '', 'summaryformat': 1, 'visible': 1 , 'highlight': 0, 'sectionformatoptions': [{'name': 'level', 'value': '1'}]}] #  Assemble the payload
+
+
+##################################################
 
 
 
 
-
-# Set our Course ID
-courseid = "2"  
-
-# Get all sections of the course.
-sec = LocalGetSections(courseid)
-
-
-
-
-# Split the section name by dash and convert the date into the timestamp, it takes the current year, so think of a way for making sure it has the correct year!
-month = parser.parse(list(sec.getsections)[1]['name'].split('-')[0])
-# Show the resulting timestamp
-#rkprint(month)
-# Extract the week number from the start of the calendar year
-#rkprint(month.strftime("%V"))
-
-#  Assemble the payload
-data = [{'type': 'num', 'section': 0, 'summary': '', 'summaryformat': 1, 'visible': 1 , 'highlight': 0, 'sectionformatoptions': [{'name': 'level', 'value': '1'}]}]
 
 
 
@@ -148,29 +148,93 @@ for video in videos: #iterate through data from each video found in the class = 
     list_of_video_dictionaries.append({}) #Add a new dictionary to the list each time we find a new video
     video_id = video.parent.parent.parent.parent.attrs['data-id'] #Get the hash for each video
     list_of_video_dictionaries[counter_2]["hash"] = video_id #Assign the hash to the "hash" key in the dictionary
-    date = re.search(r'\d{4}-\d{2}-\d{2}', str(video)) #Get the date of each video
-    list_of_video_dictionaries[counter_2]["date"] = date.group() #Assign the date to the "date" key in the dictionary
+    video_date = re.search(r'\d{4}-\d{2}-\d{2}', str(video)) #Get the date of each video
+    video_date = video_date.group() #Take the date string only
+    video_date = datetime.datetime(*(int(s) for s in video_date.split('-'))) #Convert date string to datetime class
+    list_of_video_dictionaries[counter_2]["date"] = video_date #Assign the date to the "date" key in the dictionary
     counter_2 += 1 #Increase the counter by 1 to track the indices of our list
 
 #print(list_of_video_dictionaries)
+
+
+
+#############################################################################
+### Compare date of video to week name and add the video to the correct week
+#############################################################################
+
+
+list_of_datetime_dictionaries = [{}] #Create a list with one empty dictionary in it. Used to add our datetime dictionaries
+counter_3 = 0 #Create counter for the indices of our list
+
+
+for j in range(1,26): 
+    list_of_datetime_dictionaries.append({}) #Add a new dictionary to the list each time we find a new video
+    week_start = parser.parse(list(sec.getsections)[j]['name'].split('-')[0]) # Split the section name by dash and convert the date into the timestamp
+    week_end = parser.parse(list(sec.getsections)[j]['name'].split('-')[1]) # Split the section name by dash and convert the date into the timestamp
+    if week_start > datetime.datetime(2021,8,1):
+        week_start -= relativedelta(years=1)
+    if week_end > datetime.datetime(2021,8,1):
+        week_end -= relativedelta(years=1)
+    list_of_datetime_dictionaries[counter_3]["start_date"] = week_start
+    list_of_datetime_dictionaries[counter_3]["end_date"] = week_end
+    counter_3 += 1
+print(list_of_datetime_dictionaries)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ################################
 ### Update html links on Moodle
 ################################
 
-for d in list_of_folder_dictionaries: 
-    summary = '<a href="https://mikhail-cct.github.io/ca3-test/wk{}/">Week{} Slides</a><br><a href="https://mikhail-cct.github.io/ca3-test/wk{}.pdf/">Week{} PDF</a><br>'.format(d["week_number"], d["week_number"], d["week_number"], d["week_number"])
-    data[0]['summary'] = summary
-    data[0]['section'] = d["week_number"]
-    sec_write = LocalUpdateSections(courseid, data)
+
+# for d in list_of_folder_dictionaries: 
+#     summary = '<a href="https://mikhail-cct.github.io/ca3-test/wk{}/">Week{} Slides</a><br><a href="https://mikhail-cct.github.io/ca3-test/wk{}.pdf/">Week{} PDF</a><br>'.format(d["week_number"], d["week_number"], d["week_number"], d["week_number"])
+#     data[0]['summary'] = summary
+#     data[0]['section'] = d["week_number"]
+#     sec_write = LocalUpdateSections(courseid, data)
+
+#print(summary)
 
 
-#for counter_1er in range(1,13):
-    #print(json.dumps(sec.getsections[counter_1er]["sectionnum"], indent=4, sort_keys=True))
-    #print(json.dumps(sec.getsections[counter_1er]["summary"], indent=4, sort_keys=True))
+
+# week_counter = 1
+# video_counter = 1
+
+# for video in videos:
+#     while True:
+#         if list_of_video_dictionaries[week_counter]["date"] >= list_of_datetime_dictionaries[video_counter]["start_date"] and list_of_video_dictionaries[week_counter]["date"] <= list_of_datetime_dictionaries[video_counter]["end_date"]:
+#             summary = sec.getsections[week_counter]["summary"]
+#             summary +='<a href="https://drive.google.com/file/d/{}/">Week{} Video</a>'.format(list_of_video_dictionaries[week_counter]["hash"], week_counter)
+#             data[0]['summary'] = ''
+#             data[0]['section'] = week_counter
+#             sec_write = LocalUpdateSections(courseid, data)
+#             data[0]['summary'] = summary
+#             sec_write = LocalUpdateSections(courseid, data)
+#             break
+#         elif video_counter == len(videos):
+#             break
+#         else:
+#             video_counter += 1
+#     if week_counter < 15: #len(list_of_video_dictionaries):
+#         week_counter +=1
+
+# print(summary)
 
 
-    
+#for i in range(1,13):
+   #print(json.dumps(sec.getsections[i], indent=4, sort_keys=True))
+    #print(json.dumps(sec.getsections[i]["sectionnum"], indent=4, sort_keys=True))
+    #print(json.dumps(sec.getsections[i]["summary"], indent=4, sort_keys=True))
 
-#https://drive.google.com/file/d/
+
